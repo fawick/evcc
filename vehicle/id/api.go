@@ -134,3 +134,20 @@ func (v *API) Status(vin string) (res Status, err error) {
 
 	return res, err
 }
+
+// Action implements vehicle actions
+func (v *API) Action(vin, action, value string) error {
+	uri := fmt.Sprintf("https://mobileapi.apps.emea.vwapps.io/vehicles/%s/%s/%s", vin, action, value)
+
+	req, err := request.New(http.MethodPost, uri, nil, map[string]string{
+		"Accept":        "application/json",
+		"Authorization": "Bearer " + v.identity.Token(),
+	})
+
+	if err == nil {
+		var res interface{}
+		err = v.DoJSON(req, &res)
+	}
+
+	return err
+}

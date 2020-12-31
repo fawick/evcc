@@ -462,6 +462,13 @@ func (lp *LoadPoint) setLimit(maxCurrent float64, force bool) (err error) {
 			lp.guardUpdated = lp.clock.Now()
 			lp.log.DEBUG.Printf("charger %s", status[enabled])
 			lp.bus.Publish(evChargeCurrent, maxCurrent)
+
+			// wake up vehicle
+			if car, ok := lp.vehicle.(api.VehicleStartCharge); enabled && ok {
+				if err := car.StartCharge(); err != nil {
+					lp.log.ERROR.Printf("vehicle remote charge start: %v", err)
+				}
+			}
 		}
 	}
 
